@@ -38,19 +38,33 @@ def apply_figure(state, figure):
         old_pos = perm[fig]
         new_state[fig] = state[old_pos]
     return new_state
-
-def check_choreo(state, figures, length):
-    length_used = 0
-    return
     
+def find_choreo(state, bars_left, figures, path):
+    if bars_left == 0:
+        if state == list(range(16)):
+            return path
+        else:
+            return False
+    
+    if bars_left < 0:
+        return False
+    
+    for fig in figures:
+        if fig["takte"] <= bars_left:
+            new_state = apply_figure(state, fig["permutation"])
+            result = find_choreo(new_state, bars_left - fig["takte"], figures, path + [fig["name"]])
+            if result:
+                return result
+    return False
 
 if __name__ == "__main__":
     lines = readfile("choreos/choreo01.txt")
     length = int(lines[0])
     figure_count = int(lines[1])
     figures = []
+    
     for i in range(2, 2 + figure_count):
-        parts = lines[i].split()  # Teile bei Leerzeichen
+        parts = lines[i].split()
         name = parts[0]
         takte = int(parts[1])
         permutation = parts[2]
@@ -63,8 +77,22 @@ if __name__ == "__main__":
     
     print(f"Musiklänge: {length} Takte")
     print(f"Anzahl Figuren: {figure_count}")
-    print("Figuren:")
+    print("\nFiguren:")
     for fig in figures:
-        print(f"  {fig['name']}: {fig['takte']} Takte, {fig['permutation']}")
+        print(f"  {fig['name']}: {fig['takte']} Takte")
     
+    # Suche Choreographie
+    print("\nSuche Choreographie...")
+    start_state = list(range(16))
+    choreography = find_choreo(start_state, length, figures, [])
     
+    if choreography:
+        print(f"Lösung gefunden")
+        print(f"Choreographie: {' -> '.join(choreography)}")
+        print(f"Anzahl Figuren: {len(choreography)}")
+        
+        # Berechne Gesamttakte zur Verifikation
+        total_takte = sum(fig['takte'] for fig in figures if fig['name'] in choreography)
+        print(f"Gesamttakte: {total_takte}")
+    else:
+        print("Keine Lösung gefunden")
