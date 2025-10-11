@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 def read_parkdata(filename):
     with open(filename, "r") as file:
         # Wege einlesen 
@@ -21,7 +20,6 @@ def read_parkdata(filename):
 
     return paths, lakes
 
-=======
 from shapely.geometry import LineString, Polygon
 
 # Example path
@@ -40,4 +38,3 @@ min_distance = path.distance(nearest_lake)
 
 print("Nearest lake distance:", min_distance)
 print("Nearest lake geometry:", nearest_lake)
->>>>>>> Stashed changes
