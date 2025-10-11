@@ -39,23 +39,77 @@ def apply_figure(state, figure):
         new_state[fig] = state[old_pos]
     return new_state
     
-def find_choreo(state, bars_left, figures, path):
+def find_choreo(state, bars_left, figures, path, all_solutions):
     if bars_left == 0:
         if state == list(range(16)):
-            return path
-        else:
-            return False
+            all_solutions.append(path[:])
+        return
     
     if bars_left < 0:
-        return False
+        return 
     
     for fig in figures:
         if fig["takte"] <= bars_left:
             new_state = apply_figure(state, fig["permutation"])
-            result = find_choreo(new_state, bars_left - fig["takte"], figures, path + [fig["name"]])
-            if result:
-                return result
-    return False
+            path.append(fig["name"])
+
+            find_choreo(new_state, bars_left - fig["takte"], figures, path, all_solutions)
+
+            path.pop()
+
+   
+
+def evaluate(all_choreographies, figures):
+    """Kriterien:
+    Möglichst viele unterschiedliche Figuren   werden eingebaut.
+    Möglichst viele Figuren werden eingebaut.
+    Möglichst wenige Figuren werden eingebaut.
+    Die von allen Tanzenden insgesamt zurückgelegte Strecke soll möglichst groß sein.
+    Die von allen Tanzenden insgesamt zurückgelegte Strecke soll möglichst klein sein.
+    liste der besten Choreographien zurückgeben
+    """
+    leaderboard = [None, None, None, None, None]
+    max_figure_count = 0
+    max_diversity = 0
+    min_figure_count = 999
+    min_distance = 999
+    max_distance = 0
+    
+    for choreo in all_choreographies:
+        # Max Figuren
+        if len(choreo) > max_figure_count:
+            max_figure_count = len(choreo)
+            leaderboard[0] = choreo
+        
+        # Max Diversität
+        if len(set(choreo)) > max_diversity:
+            max_diversity = len(set(choreo))
+            leaderboard[1] = choreo
+        
+        # Min Figuren
+        if len(choreo) < min_figure_count:
+            min_figure_count = len(choreo)
+            leaderboard[2] = choreo
+        
+        # Distanz berechnen
+        distance = sum(find_distance(fig, figures) for fig in choreo)
+        
+        if distance < min_distance:
+            min_distance = distance
+            leaderboard[3] = choreo
+        if distance > max_distance:
+            max_distance = distance
+            leaderboard[4] = choreo
+    
+    return leaderboard
+
+def find_distance(figure_name, figures):
+    fig_data = next(f for f in figures if f["name"] == figure_name)
+    perm = parse_figure(fig_data["permutation"])
+    return sum(abs(perm[i] - i) for i in range(len(perm)))
+    
+        
+
 
 if __name__ == "__main__":
     lines = readfile("choreos/choreo01.txt")
@@ -84,15 +138,17 @@ if __name__ == "__main__":
     # Suche Choreographie
     print("\nSuche Choreographie...")
     start_state = list(range(16))
-    choreography = find_choreo(start_state, length, figures, [])
+    solutions = []
+    choreography = find_choreo(start_state, length, figures, [], solutions)
+    evaluated_solutions = evaluate(solutions, figures)
+    choreography = evaluated_solutions[0] if evaluated_solutions else None
     
-    if choreography:
-        print(f"Lösung gefunden")
-        print(f"Choreographie: {' -> '.join(choreography)}")
-        print(f"Anzahl Figuren: {len(choreography)}")
-        
-        # Berechne Gesamttakte zur Verifikation
-        total_takte = sum(fig['takte'] for fig in figures if fig['name'] in choreography)
-        print(f"Gesamttakte: {total_takte}")
+    evaluated_solutions = evaluate(solutions, figures)
+
+    if solutions:
+        for i, leader in enumerate(evaluated_solutions):
+            if leader:
+                print(f"\nBeste Choreographie nach Kriterium {i+1}:")
+                print(" - ".join(leader))
     else:
         print("Keine Lösung gefunden")
