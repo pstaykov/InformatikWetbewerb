@@ -1,6 +1,7 @@
 from shapely.geometry import LineString, Polygon
 from shapely.ops import nearest_points
 import matplotlib.pyplot as plt
+import os
 
 def read_parkdata(filename):
     with open(filename, "r") as file:
@@ -25,7 +26,8 @@ def read_parkdata(filename):
     return paths, lakes
 
 
-paths, lakes = read_parkdata("BWINF/InformatikWetbewerb/NasserHund/eingaben/hund05.txt")
+input_path = os.path.join(os.path.dirname(__file__), "eingaben", "hund05.txt")
+paths, lakes = read_parkdata(input_path)
 
 # Convert to Shapely geometries
 paths = [LineString(path) for path in paths]
