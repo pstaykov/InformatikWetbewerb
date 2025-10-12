@@ -26,7 +26,7 @@ def read_parkdata(filename):
     return paths, lakes
 
 
-input_path = os.path.join(os.path.dirname(__file__), "eingaben", "hund05.txt")
+input_path = os.path.join(os.path.dirname(__file__), "eingaben", "hund03.txt")
 paths, lakes = read_parkdata(input_path)
 
 # Convert to Shapely geometries
