@@ -81,7 +81,6 @@ def verarbeite_datei(filepath):
 if __name__ == "__main__":
     folder_path = "trees"
     
-    # Teste zuerst das Beispiel aus der Aufgabe
     beispiel_baum = "(((()())(()())(()()))((()())(()()))((()()())(()()()))))"
     print("="*60)
     print("TEST: Beispiel aus Abbildung A")
@@ -123,7 +122,7 @@ if __name__ == "__main__":
             print("ZUSAMMENFASSUNG ALLER DATEIEN")
             print(f"{'='*60}")
             for filename, ergebnis in ergebnisse.items():
-                status = "DREHFREUDIG ✓" if ergebnis else "NICHT DREHFREUDIG ✗" if ergebnis is not None else "FEHLER"
+                status = "DREHFREUDIG" if ergebnis else "NICHT DREHFREUDIG" if ergebnis is not None else "FEHLER"
                 print(f"{filename:30s} -> {status}")
         else:
             print(f"Keine .txt Dateien in '{folder_path}' gefunden.")
