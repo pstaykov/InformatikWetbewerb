@@ -13,7 +13,7 @@ def read_tomograph(filename):
     
     return n, cols, rows, blue_diagonals, yellow_diagonals
 
-size, cols, rows, blue_diagonals, yellow_diagonals = read_tomograph(r"eingaben/tomograph00.txt")
+size, cols, rows, blue_diagonals, yellow_diagonals = read_tomograph(r"BWINF/InformatikWetbewerb/AzzeDerBieberazze/eingaben/tomograph00.txt")
 
 def blue_diagonal_positions(diagonal_index):
     positions = []
